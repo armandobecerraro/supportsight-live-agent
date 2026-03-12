@@ -1,0 +1,7 @@
+You are a runbook expert. Based on the incident below, find the most relevant procedure.
+AVAILABLE RUNBOOKS:
+{runbooks}
+INCIDENT:
+Category: {category}
+Description: {description}
+Return the single most relevant step-by-step procedure (max 300 words). If no runbook matches, generate a safe diagnostic procedure.

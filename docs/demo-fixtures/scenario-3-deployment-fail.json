@@ -1,0 +1,7 @@
+{
+  "scenario": "Failed Deployment — Image Pull Error",
+  "description": "New deployment is stuck. Pods are not starting after the latest release.",
+  "logs": "2026-03-12 14:00:01 INFO Deployment supportsight-backend rolling update started\n2026-03-12 14:00:15 WARNING Pod supportsight-backend-xyz ImagePullBackOff\n2026-03-12 14:00:45 ERROR Failed to pull image gcr.io/project/backend:v2.1.0 - 403 Forbidden\n2026-03-12 14:01:15 ERROR Readiness probe failed: connection refused\n2026-03-12 14:02:00 WARNING Rollout stalled — 0/3 pods ready",
+  "expected_category": "deployment",
+  "expected_hypothesis": "Container image pull failure due to registry authentication/permissions"
+}

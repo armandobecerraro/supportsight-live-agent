@@ -1,0 +1,63 @@
+version: '3.9'
+
+services:
+  backend-orchestrator:
+    build: ./backend-orchestrator
+    ports: ["8080:8080"]
+    environment:
+      - GEMINI_API_KEY=${GEMINI_API_KEY}
+      - DATABASE_URL=postgresql+asyncpg://supportsight:supportsight@postgres:5432/supportsight
+      - REDIS_URL=redis://redis:6379/0
+      - LOGS_SERVICE_URL=http://logs-service:8090
+      - ACTIONS_SERVICE_URL=http://actions-service:8091
+      - DEBUG=true
+      - ENVIRONMENT=development
+    depends_on: [postgres, redis, logs-service, actions-service]
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/health"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+
+  logs-service:
+    build: ./logs-service
+    ports: ["8090:8090"]
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8090/health"]
+      interval: 30s
+      timeout: 5s
+
+  actions-service:
+    build: ./actions-service
+    ports: ["8091:8091"]
+    environment:
+      - DATABASE_URL=jdbc:postgresql://postgres:5432/supportsight
+      - ACTIONS_SERVICE_API_KEY=${ACTIONS_SERVICE_API_KEY:-change-me}
+    depends_on: [postgres]
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8091/actions/health"]
+      interval: 30s
+      timeout: 5s
+
+  frontend:
+    build: ./frontend
+    ports: ["3000:3000"]
+    environment:
+      - NEXT_PUBLIC_API_URL=http://localhost:8080
+    depends_on: [backend-orchestrator]
+
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: supportsight
+      POSTGRES_USER: supportsight
+      POSTGRES_PASSWORD: supportsight
+    ports: ["5432:5432"]
+    volumes: [pg_data:/var/lib/postgresql/data]
+
+  redis:
+    image: redis:7-alpine
+    ports: ["6379:6379"]
+
+volumes:
+  pg_data:

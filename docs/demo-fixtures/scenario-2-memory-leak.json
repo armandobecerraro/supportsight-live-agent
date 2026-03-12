@@ -1,0 +1,7 @@
+{
+  "scenario": "Memory Leak — OOM Kill",
+  "description": "Backend service keeps restarting every 20 minutes. Kubernetes shows OOMKilled status.",
+  "logs": "2026-03-12 09:00:00 INFO Service started OK\n2026-03-12 09:15:32 WARN Heap usage at 78% (3.1GB/4GB)\n2026-03-12 09:18:44 WARN Heap usage at 92% (3.7GB/4GB)\n2026-03-12 09:20:01 ERROR OutOfMemoryError: Java heap space\n2026-03-12 09:20:01 FATAL JVM terminated: OOM\n2026-03-12 09:20:15 INFO Service restarting (attempt 1)",
+  "expected_category": "backend",
+  "expected_hypothesis": "Memory leak causing OOM — heap growth without GC reclaim"
+}

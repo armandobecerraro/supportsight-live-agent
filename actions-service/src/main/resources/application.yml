@@ -1,0 +1,32 @@
+server:
+  port: 8091
+
+spring:
+  application:
+    name: actions-service
+  datasource:
+    url: ${DATABASE_URL:jdbc:h2:mem:supportsight}
+    driver-class-name: ${DB_DRIVER:org.h2.Driver}
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: false
+  h2:
+    console:
+      enabled: false
+
+actions:
+  api-key: ${ACTIONS_SERVICE_API_KEY:change-me}
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
+  endpoint:
+    health:
+      show-details: never
+
+logging:
+  pattern:
+    console: '{"time":"%d","level":"%p","logger":"%c{1}","msg":"%m"}%n'

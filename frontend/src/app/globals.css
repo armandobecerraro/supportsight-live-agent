@@ -1,0 +1,16 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --primary: #01696F;
+  --primary-hover: #0C4E54;
+}
+
+* { box-sizing: border-box; }
+
+.confidence-bar {
+  height: 6px;
+  border-radius: 3px;
+  background: linear-gradient(90deg, #01696F, #4F98A3);
+}

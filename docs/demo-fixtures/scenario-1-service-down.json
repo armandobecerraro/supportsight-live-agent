@@ -1,0 +1,7 @@
+{
+  "scenario": "API Service Down — 503 errors",
+  "description": "Our payment API has been returning 503 errors for the last 10 minutes. Users cannot complete checkouts.",
+  "logs": "2026-03-12 10:45:01 ERROR Connection refused to database host db-primary:5432\n2026-03-12 10:45:02 ERROR Failed to acquire connection from pool (timeout=30s)\n2026-03-12 10:45:03 FATAL Max connection pool size (100) reached\n2026-03-12 10:45:04 ERROR HTTP 503 returned to client on /api/payments\n2026-03-12 10:45:05 WARN Retrying connection (attempt 3/3)\n2026-03-12 10:45:06 FATAL Database connection exhausted — all retries failed",
+  "expected_category": "database",
+  "expected_hypothesis": "Connection pool exhaustion due to database connectivity issue"
+}
