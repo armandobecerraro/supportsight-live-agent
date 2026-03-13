@@ -34,8 +34,8 @@ interface SpeechRecognition extends EventTarget {
 
 declare global {
   interface Window {
-    SpeechRecognition: new () => SpeechRecognition;
-    webkitSpeechRecognition: new () => SpeechRecognition;
+    SpeechRecognition?: new () => SpeechRecognition;
+    webkitSpeechRecognition?: new () => SpeechRecognition;
   }
 }
 
@@ -45,11 +45,12 @@ export function useAudioRecorder() {
   const recognitionRef = useRef<SpeechRecognition | null>(null);
 
   const startRecording = useCallback(() => {
-    if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
+    const SpeechRecognitionAPI =
+      window.SpeechRecognition ?? window.webkitSpeechRecognition;
+    if (!SpeechRecognitionAPI) {
       alert('Speech recognition not supported in this browser.');
       return;
     }
-    const SpeechRecognitionAPI = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
     const recognition: SpeechRecognition = new SpeechRecognitionAPI();
     recognition.continuous = true;
     recognition.interimResults = true;
