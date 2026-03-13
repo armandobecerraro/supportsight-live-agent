@@ -5,8 +5,10 @@ spring:
   application:
     name: actions-service
   datasource:
-    url: ${DATABASE_URL:jdbc:h2:mem:supportsight}
-    driver-class-name: ${DB_DRIVER:org.h2.Driver}
+    url: ${DATABASE_URL:jdbc:postgresql://postgres:5432/supportsight}
+    username: ${DB_USER:supportsight}
+    password: ${DB_PASSWORD:supportsight}
+    driver-class-name: ${DB_DRIVER:org.postgresql.Driver}
   jpa:
     hibernate:
       ddl-auto: update
