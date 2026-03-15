@@ -15,7 +15,8 @@ class RunbookChunk(BaseModel):
 
 class VectorDBClient:
     def __init__(self, dsn: str):
-        self.dsn = dsn
+        # asyncpg doesn't support 'postgresql+asyncpg://' driver part, only 'postgresql://'
+        self.dsn = dsn.replace("postgresql+asyncpg://", "postgresql://")
         self._pool = None
 
     async def connect(self):
