@@ -16,7 +16,7 @@ def test_issue_endpoint_returns_session():
          patch("app.agents.runbook_agent.RunbookAgent.query", new_callable=AsyncMock) as mr, \
          patch("app.agents.action_agent.ActionAgent.prepare", new_callable=AsyncMock) as mp:
         mv.return_value = ""
-        ma.return_value = ([], __import__("app.domain.models", fromlist=["IncidentCategory"]).IncidentCategory.UNKNOWN)
+        ma.return_value = ([], __import__("app.domain.models", fromlist=["IncidentCategory"]).IncidentCategory.UNKNOWN, "No root cause")
         mr.return_value = "Check the logs"
         mp.return_value = []
         r = client.post("/agent/issue", json={"description": "Service is down, 500 errors in API"})

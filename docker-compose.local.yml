@@ -32,6 +32,9 @@ services:
     ports: ["8091:8091"]
     environment:
       - DATABASE_URL=jdbc:postgresql://postgres:5432/supportsight
+      - DB_USER=supportsight
+      - DB_PASSWORD=supportsight
+      - DB_DRIVER=org.postgresql.Driver
       - ACTIONS_SERVICE_API_KEY=${ACTIONS_SERVICE_API_KEY:-change-me}
     depends_on: [postgres]
     healthcheck:

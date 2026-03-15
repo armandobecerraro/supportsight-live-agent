@@ -7,6 +7,7 @@ RUN mvn package -DskipTests -q
 
 FROM eclipse-temurin:21-jre-jammy
 WORKDIR /app
+RUN apt-get update && apt-get install -y curl && rm -rf /var/lib/apt/lists/*
 COPY --from=builder /app/target/*.jar app.jar
 EXPOSE 8091
 HEALTHCHECK --interval=30s --timeout=5s CMD curl -f http://localhost:8091/actions/health || exit 1
