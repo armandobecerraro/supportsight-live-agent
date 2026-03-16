@@ -1,0 +1,15 @@
+target
+Cargo.lock
+.venv
+__pycache__
+*.pyc
+.git
+.github
+.env
+.cursor
+terminals
+agent-transcripts
+agent-tools
+docs
+infra
+terraform

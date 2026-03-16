@@ -1,0 +1,14 @@
+target
+*.class
+*.jar
+.mvn
+.git
+.github
+.env
+.cursor
+terminals
+agent-transcripts
+agent-tools
+docs
+infra
+terraform

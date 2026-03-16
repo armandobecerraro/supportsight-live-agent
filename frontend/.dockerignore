@@ -1,0 +1,17 @@
+node_modules
+.next
+out
+build
+dist
+.git
+.github
+.env
+.env.local
+.cursor
+terminals
+agent-transcripts
+agent-tools
+docs
+infra
+terraform
+coverage

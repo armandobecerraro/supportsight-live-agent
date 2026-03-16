@@ -30,14 +30,14 @@ class VectorDBClient:
                         id SERIAL PRIMARY KEY,
                         content TEXT NOT NULL,
                         metadata JSONB,
-                        embedding vector(768)
+                        embedding vector(3072)
                     )
                 """)
-                # Create HNSW index for faster similarity search
-                await conn.execute("""
-                    CREATE INDEX IF NOT EXISTS runbook_chunks_embedding_idx 
-                    ON runbook_chunks USING hnsw (embedding vector_cosine_ops)
-                """)
+                # Skip index for > 2000 dimensions in some pgvector versions, or use ivfflat
+                # await conn.execute("""
+                #     CREATE INDEX IF NOT EXISTS runbook_chunks_embedding_idx 
+                #     ON runbook_chunks USING hnsw (embedding vector_cosine_ops)
+                # """)
         return self._pool
 
     async def search_relevant_chunks(self, query_embedding: List[float], limit: int = 3) -> List[str]:
