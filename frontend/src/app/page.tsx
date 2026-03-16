@@ -81,13 +81,31 @@ export default function Home() {
     setError(null);
   };
 
-  const loadExample = (type: 'db' | 'auth') => {
+  const loadExample = (type: 'db' | 'auth' | 'deploy' | 'memory' | 'voice1' | 'voice2' | 'screenshot1' | 'screenshot2') => {
     if (type === 'db') {
-      setDescription('Database connection failure in production');
-      setLogs('2026-03-16 14:20:01 ERROR Connection timeout after 30s\n2026-03-16 14:20:05 FATAL pgvector.asyncpg.PoolError: database is unresponsive');
+      setDescription('Our payment API has been returning 503 errors for the last 10 minutes. Users cannot complete checkouts.');
+      setLogs('2026-03-12 10:45:01 ERROR Connection refused to database host db-primary:5432\n2026-03-12 10:45:02 ERROR Failed to acquire connection from pool (timeout=30s)\n2026-03-12 10:45:03 FATAL Max connection pool size (100) reached\n2026-03-12 10:45:04 ERROR HTTP 503 returned to client on /api/payments\n2026-03-12 10:45:05 WARN Retrying connection (attempt 3/3)\n2026-03-12 10:45:06 FATAL Database connection exhausted — all retries failed');
+    } else if (type === 'auth') {
+      setDescription('Authentication service is returning 401 for all users. Login and API calls started failing after the last deploy.');
+      setLogs('2026-03-16 10:00:00 ERROR [auth-service] JWT secret key mismatch\n2026-03-16 10:00:05 WARN [auth-service] Token validation failed: signature invalid\n2026-03-16 10:00:10 ERROR [auth-service] 401 Unauthorized returned to client');
+    } else if (type === 'deploy') {
+      setDescription('New deployment is stuck. Pods are not starting after the latest release.');
+      setLogs('2026-03-12 14:00:01 INFO Deployment supportsight-backend rolling update started\n2026-03-12 14:00:15 WARNING Pod supportsight-backend-xyz ImagePullBackOff\n2026-03-12 14:00:45 ERROR Failed to pull image gcr.io/project/backend:v2.1.0 - 403 Forbidden\n2026-03-12 14:01:15 ERROR Readiness probe failed: container not ready\n2026-03-12 14:02:00 WARNING Rollout stalled — 0/3 pods ready');
+    } else if (type === 'memory') {
+      setDescription('Backend service keeps restarting every 20 minutes. Kubernetes shows OOMKilled status.');
+      setLogs('2026-03-12 09:00:00 INFO Service started OK\n2026-03-12 09:15:32 WARN Heap usage at 78% (3.1GB/4GB)\n2026-03-12 09:18:44 WARN Heap usage at 92% (3.7GB/4GB)\n2026-03-12 09:20:01 ERROR OutOfMemoryError: Java heap space\n2026-03-12 09:20:01 FATAL JVM terminated: OOM\n2026-03-12 09:20:15 INFO Service restarting (attempt 1)');
+    } else if (type === 'voice1') {
+      setDescription('Our payment API is returning 503 errors and users cannot complete checkouts.');
+      setLogs('');
+    } else if (type === 'voice2') {
+      setDescription('Backend service keeps restarting every 20 minutes; Kubernetes shows OOMKilled and we see OutOfMemoryError in the logs.');
+      setLogs('');
+    } else if (type === 'screenshot1') {
+      setDescription('I am seeing this error on the production dashboard — see attached screenshot. The UI shows a 503 Service Unavailable message.');
+      setLogs('');
     } else {
-      setDescription('Authentication service is returning 401 for all users');
-      setLogs('2026-03-16 10:00:00 ERROR [auth-service] JWT secret key mismatch\n2026-03-16 10:00:05 WARN [auth-service] Token validation failed: signature invalid');
+      setDescription('New deployment is stuck. Pods are in ImagePullBackOff — see attached screenshot of kubectl get pods output.');
+      setLogs('');
     }
     setShowDocs(false);
   };
@@ -109,51 +127,93 @@ export default function Home() {
               <div className="w-10 h-10 bg-cyan-500/20 rounded-xl flex items-center justify-center">
                 <BookOpen className="w-6 h-6 text-cyan-400" />
               </div>
-              <h2 className="text-2xl font-bold">Guía de Inicio Rápido</h2>
+              <h2 className="text-2xl font-bold">Quick Start Guide</h2>
             </div>
 
             <div className="space-y-8">
+              <section className="space-y-3 p-4 bg-emerald-500/5 border border-emerald-500/20 rounded-2xl">
+                <h3 className="text-sm font-bold uppercase tracking-widest text-emerald-400 flex items-center gap-2">
+                  <Play className="w-4 h-4" /> Demo steps (for video)
+                </h3>
+                <ol className="text-sm text-gray-300 space-y-1 list-decimal list-inside">
+                  <li>Click one of the examples below — it fills <strong>Incident Context</strong> and <strong>Logs</strong>.</li>
+                  <li>Optional: add a screenshot via <strong>Capture Screen</strong> or <strong>Attach Snippets</strong>.</li>
+                  <li>Tap <strong>Analyze Incident</strong> and wait for the agent response.</li>
+                  <li>Review <strong>What I understood</strong>, <strong>Hypotheses</strong>, <strong>Recommendations</strong>, and any <strong>Suggested actions</strong>.</li>
+                </ol>
+              </section>
+
               <section className="space-y-3">
                 <h3 className="text-sm font-bold uppercase tracking-widest text-white/40 flex items-center gap-2">
-                  <Zap className="w-4 h-4 text-emerald-400" /> ¿Cómo funciona?
+                  <Zap className="w-4 h-4 text-emerald-400" /> How does it work?
                 </h3>
                 <p className="text-sm text-gray-400 leading-relaxed">
-                  SupportSight Live es un agente autónomo multimodal diseñado para ingenieros de SRE y DevOps. Analiza incidentes usando tres flujos de datos simultáneos:
+                  SupportSight Live is a multimodal autonomous agent designed for SRE and DevOps engineers. It analyzes incidents using three simultaneous data streams:
                 </p>
                 <ul className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
                   <li className="bg-white/5 border border-white/5 rounded-2xl p-4 text-center">
                     <Mic className="w-5 h-5 mx-auto mb-2 text-cyan-400" />
-                    <span className="text-[10px] font-bold uppercase tracking-tighter">Voz en Tiempo Real</span>
+                    <span className="text-[10px] font-bold uppercase tracking-tighter">Real-Time Voice</span>
                   </li>
                   <li className="bg-white/5 border border-white/5 rounded-2xl p-4 text-center">
                     <Monitor className="w-5 h-5 mx-auto mb-2 text-emerald-400" />
-                    <span className="text-[10px] font-bold uppercase tracking-tighter">Visión de Pantalla</span>
+                    <span className="text-[10px] font-bold uppercase tracking-tighter">Screen Vision</span>
                   </li>
                   <li className="bg-white/5 border border-white/5 rounded-2xl p-4 text-center">
                     <FileText className="w-5 h-5 mx-auto mb-2 text-purple-400" />
-                    <span className="text-[10px] font-bold uppercase tracking-tighter">Análisis de Logs (Rust)</span>
+                    <span className="text-[10px] font-bold uppercase tracking-tighter">Log Analysis (Rust)</span>
                   </li>
+                </ul>
+              </section>
+
+              <section className="space-y-3 p-4 bg-white/5 border border-white/10 rounded-2xl">
+                <h3 className="text-sm font-bold uppercase tracking-widest text-cyan-400 flex items-center gap-2">
+                  <FileText className="w-4 h-4" /> Logs attached — how the log parser works
+                </h3>
+                <p className="text-xs text-gray-400 leading-relaxed">
+                  When you attach logs and tap <strong>Analyze Incident</strong>, the backend sends them to the <strong>log service</strong> (Rust parser). It extracts every line containing <strong>ERROR</strong>, <strong>FATAL</strong>, or <strong>EXCEPTION</strong> and infers a <strong>probable cause</strong> from keywords. That summary is then used by the agent to produce hypotheses and recommendations.
+                </p>
+                <ul className="text-[10px] text-gray-500 space-y-1 mt-2">
+                  <li>• <strong className="text-cyan-400">Connection refused</strong> in logs → parser returns <em>Service connectivity failure</em> → expect DB/connectivity hypotheses.</li>
+                  <li>• <strong className="text-amber-400">OutOfMemoryError / OOM</strong> → <em>Memory exhaustion</em> → expect backend/memory-leak hypotheses.</li>
+                  <li>• <strong className="text-purple-400">timeout</strong> → <em>Timeout cascade</em> → expect timeout/retry recommendations.</li>
+                  <li>• Other errors → <em>Application error in N log lines</em> → agent uses the error list for hypotheses (e.g. auth, deployment).</li>
                 </ul>
               </section>
 
               <section className="space-y-3">
                 <h3 className="text-sm font-bold uppercase tracking-widest text-white/40 flex items-center gap-2">
-                  <Play className="w-4 h-4 text-cyan-400" /> Probar con ejemplos
+                  <Play className="w-4 h-4 text-cyan-400" /> Ready-to-run examples (description + logs)
                 </h3>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <p className="text-[10px] text-white/30">Each button fills <strong>Incident Context</strong> and <strong>Logs</strong> with realistic content. Tap &quot;Analyze Incident&quot; to see the agent use the log parser output and return hypotheses + recommendations.</p>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   <button 
                     onClick={() => loadExample('db')}
                     className="flex flex-col gap-2 p-4 bg-cyan-500/5 border border-cyan-500/20 rounded-2xl hover:bg-cyan-500/10 transition-all text-left group"
                   >
-                    <span className="text-xs font-bold text-cyan-400 group-hover:underline">Escenario A: Caída de DB</span>
-                    <span className="text-[10px] text-gray-500">Simula un error de timeout y pgvector pool exhaustion.</span>
+                    <span className="text-xs font-bold text-cyan-400 group-hover:underline">1. Database / 503</span>
+                    <span className="text-[10px] text-gray-500">Logs contain &quot;Connection refused&quot; and pool errors → parser: <em>Service connectivity failure</em>. You should see database/connection-pool hypotheses and root cause in the response.</span>
+                  </button>
+                  <button 
+                    onClick={() => loadExample('memory')}
+                    className="flex flex-col gap-2 p-4 bg-amber-500/5 border border-amber-500/20 rounded-2xl hover:bg-amber-500/10 transition-all text-left group"
+                  >
+                    <span className="text-xs font-bold text-amber-400 group-hover:underline">2. Backend / OOM</span>
+                    <span className="text-[10px] text-gray-500">Logs contain &quot;OutOfMemoryError&quot; and &quot;OOM&quot; → parser: <em>Memory exhaustion</em>. You should see backend/memory-leak hypotheses and recommendations (e.g. heap, GC).</span>
+                  </button>
+                  <button 
+                    onClick={() => loadExample('deploy')}
+                    className="flex flex-col gap-2 p-4 bg-purple-500/5 border border-purple-500/20 rounded-2xl hover:bg-purple-500/10 transition-all text-left group"
+                  >
+                    <span className="text-xs font-bold text-purple-400 group-hover:underline">3. Deployment</span>
+                    <span className="text-[10px] text-gray-500">Logs contain ImagePullBackOff and 403 Forbidden → parser: <em>Application error</em> in those lines. You should see deployment/image-pull or registry-auth hypotheses.</span>
                   </button>
                   <button 
                     onClick={() => loadExample('auth')}
                     className="flex flex-col gap-2 p-4 bg-emerald-500/5 border border-emerald-500/20 rounded-2xl hover:bg-emerald-500/10 transition-all text-left group"
                   >
-                    <span className="text-xs font-bold text-emerald-400 group-hover:underline">Escenario B: Fallo de Auth</span>
-                    <span className="text-[10px] text-gray-500">Simula errores de JWT y validación de firmas.</span>
+                    <span className="text-xs font-bold text-emerald-400 group-hover:underline">4. Auth / 401</span>
+                    <span className="text-[10px] text-gray-500">Logs contain JWT and 401 errors → parser: <em>Application error</em>. You should see auth/JWT/signature hypotheses and recommendations.</span>
                   </button>
                 </div>
               </section>
@@ -161,10 +221,10 @@ export default function Home() {
               <section className="space-y-3 p-6 bg-gradient-to-br from-cyan-500/10 to-transparent border border-cyan-500/20 rounded-2xl">
                 <div className="flex items-center gap-2 mb-2">
                   <Brain className="w-5 h-5 text-cyan-400" />
-                  <h3 className="text-sm font-bold uppercase tracking-widest text-white">Razonamiento Gemini</h3>
+                  <h3 className="text-sm font-bold uppercase tracking-widest text-white">Gemini Reasoning</h3>
                 </div>
                 <p className="text-xs text-gray-400 leading-relaxed">
-                  El agente utiliza **RAG (Retrieval-Augmented Generation)** con una base de datos vectorial en **Postgres** poblada con los runbooks oficiales del proyecto para proporcionar soluciones precisas y seguras.
+                  The agent uses <strong>RAG (Retrieval-Augmented Generation)</strong> with a vector database in <strong>Postgres</strong> populated with the project&apos;s official runbooks to provide accurate, safe solutions.
                 </p>
               </section>
             </div>
