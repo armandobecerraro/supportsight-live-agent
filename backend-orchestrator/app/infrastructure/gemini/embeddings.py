@@ -7,7 +7,7 @@ logger = logging.getLogger(__name__)
 class EmbeddingService:
     def __init__(self, api_key: str):
         genai.configure(api_key=api_key)
-        self.model = "models/text-embedding-004"
+        self.model = "models/gemini-embedding-001"
 
     async def generate_embedding(self, text: str) -> List[float]:
         try:

@@ -13,7 +13,7 @@ fn parse_logs_py(raw: &str) -> PyResult<String> {
 
 #[cfg(feature = "python")]
 #[pymodule]
-fn log_parser(_py: Python, m: &PyModule) -> PyResult<()> {
+fn log_parser(m: &Bound<'_, PyModule>) -> PyResult<()> {
     m.add_function(wrap_pyfunction!(parse_logs_py, m)?)?;
     Ok(())
 }
